@@ -2,36 +2,40 @@ package com.raqueveque.navcollapsedviewexample
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.view.Menu
-import android.view.MenuItem
 import androidx.appcompat.widget.Toolbar
-import androidx.navigation.findNavController
+import androidx.drawerlayout.widget.DrawerLayout
+import androidx.navigation.NavController
+import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.AppBarConfiguration
-import androidx.navigation.ui.onNavDestinationSelected
 import androidx.navigation.ui.setupWithNavController
+import com.google.android.material.navigation.NavigationView
 
 class MainActivity : AppCompatActivity() {
+
+    lateinit var appBarConfiguration: AppBarConfiguration
+    lateinit var navController: NavController
+    lateinit var drawerLayout: DrawerLayout
+    lateinit var navHostFragment: NavHostFragment
+    lateinit var toolbar: Toolbar
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-//
-//        //Configuramos el toolbar
-//        setSupportActionBar(findViewById(R.id.toolbar))
-//        //Le agregamos el navController
-//        val navController = findNavController(R.id.fragmentContainerView)
-//        val config = AppBarConfiguration(navController.graph)
-//        findViewById<Toolbar>(R.id.toolbar).setupWithNavController(
-//            navController, config)
+
+        setup()
     }
 
-    //Inflamos el menu creado para que se muestre en el toolbar
-    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
-        menuInflater.inflate(R.menu.main_menu, menu)
-        return true
+    private fun setup() {
+        toolbar = findViewById(R.id.toolbar)
+        navHostFragment = supportFragmentManager.findFragmentById(R.id.fragmentContainerView) as NavHostFragment
+        navController = navHostFragment.navController
+        drawerLayout = findViewById(R.id.drawerLayout)
+        appBarConfiguration = AppBarConfiguration(navController.graph, drawerLayout)
+        toolbar.setupWithNavController(navController, appBarConfiguration)
+        findViewById<NavigationView>(R.id.nav_view).setupWithNavController(navController)
     }
 
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        val navController = findNavController(R.id.fragmentContainerView)
-        return item.onNavDestinationSelected(navController) || super.onOptionsItemSelected(item)
+    override fun onSupportNavigateUp(): Boolean {
+        return navController.navigateUp() || super.onSupportNavigateUp()
     }
 }
